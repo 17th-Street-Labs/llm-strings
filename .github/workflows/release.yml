@@ -93,7 +93,7 @@ jobs:
             echo "::error::Configure the NPM_TOKEN repository secret with npm publishing access."
             exit 1
           fi
-          pnpm publish "$RELEASE_TARBALL" --access public --no-git-checks --ignore-scripts --publish-wait-timeout 60000
+          pnpm publish "$RELEASE_TARBALL" --access public --no-git-checks --ignore-scripts --publish-wait-timeout 600000
       - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ github.token }}

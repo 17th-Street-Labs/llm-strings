@@ -17,7 +17,9 @@ a token configured as above and rerun the workflow. See the
 3. Check the Release workflow in GitHub Actions. It verifies the version and that
    the tagged commit belongs to `main`, installs locked dependencies, runs tests
    and lint, builds, checks Node 24 and Node 20 exports, and packs the package
-   before publishing.
+   before publishing. It waits up to 10 minutes for npm to make an accepted
+   upload available. If this wait expires, check registry availability before
+   retrying; the upload may already have succeeded.
 
 To publish a tag that already exists, run the workflow manually from `main` and
 enter the existing tag. For example:
