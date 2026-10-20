@@ -2,8 +2,15 @@
 
 The `Release` GitHub Actions workflow publishes stable version tags to npm and
 creates a GitHub release with the same package tarball attached. It requires the
-repository secret `NPM_TOKEN` with publishing access to `llm-strings`. GitHub
-release operations use the built-in `GITHUB_TOKEN`.
+repository secret `NPM_TOKEN` with publishing access to `llm-strings`. Use a
+granular npm token with **Read and write (publish and stage)** package permission
+and **Bypass two-factor authentication** enabled, so the runner can publish
+without an interactive OTP. GitHub release operations use the built-in
+`GITHUB_TOKEN`.
+
+If publication fails with `ERR_PNPM_OTP_NON_INTERACTIVE`, replace `NPM_TOKEN` with
+a token configured as above and rerun the workflow. See the
+[npm token instructions](https://docs.npmjs.com/creating-and-viewing-access-tokens/).
 
 1. Update `package.json` and `CHANGELOG.md`, then commit and push to `main`.
 2. Create the matching version tag, such as `v1.10.0`, and push it.
