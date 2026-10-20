@@ -132,6 +132,14 @@ export function validate(
     ? buildSubProviderKnownParams(provider, subProvider)
     : new Set(Object.values(PROVIDER_PARAMS[provider]));
 
+  // GLM variants have separate contracts; these rules target the flagship ID.
+  const isGlm53 =
+    effectiveProvider === "zai" &&
+    config.model.split("/").pop()?.split(":")[0] === "glm-5.3";
+  const isKimiK3 =
+    effectiveProvider === "moonshotai" &&
+    modelMatchesFamily(config.model, "kimi-k3");
+
   for (const [key, value] of Object.entries(config.params)) {
     const subProviderSpecResult =
       subProvider && gatewayReverseMap
@@ -157,6 +165,113 @@ export function validate(
         severity: "error",
       });
       continue;
+    }
+
+    if (
+      (effectiveProvider === "google" ||
+        effectiveProvider === "google-vertex") &&
+      modelMatchesFamily(config.model, "gemini-4-argon") &&
+      (key === "thinkingLevel" || key === "reasoning_effort") &&
+      !["low", "medium", "high"].includes(value)
+    ) {
+      issues.push({
+        param: key,
+        value,
+        severity: "error",
+        message: "Gemini 4 Argon thinking level must be low, medium, or high.",
+      });
+      continue;
+    }
+
+    if (isGlm53 || isKimiK3) {
+      let invalidThinking = false;
+      if (key === "thinking") {
+        try {
+          const setting = JSON.parse(value);
+          invalidThinking =
+            !setting ||
+            typeof setting !== "object" ||
+            setting.type !== "enabled";
+        } catch {
+          invalidThinking = true;
+        }
+      }
+      if (
+        invalidThinking ||
+        (key === "reasoning_effort" && !["low", "high", "max"].includes(value))
+      ) {
+        issues.push({
+          param: key,
+          value,
+          severity: "error",
+          message: `${isGlm53 ? "GLM-5.3" : "Kimi K3"} always thinks; use enabled thinking and low, high, or max effort.`,
+        });
+        continue;
+      }
+    }
+
+    if (isKimiK3) {
+      const fixed: Record<string, number> = {
+        temperature: 1,
+        top_p: 0.95,
+        n: 1,
+        presence_penalty: 0,
+        frequency_penalty: 0,
+      };
+      if (
+        (Object.prototype.hasOwnProperty.call(fixed, key) &&
+          Number(value) !== fixed[key]) ||
+        (key === "max_completion_tokens" && Number(value) > 1048576)
+      ) {
+        issues.push({
+          param: key,
+          value,
+          severity: "error",
+          message: `Unsupported "${key}" for Kimi K3; use low/high/max effort, fixed sampling defaults, and at most 1048576 completion tokens.`,
+        });
+        continue;
+      }
+    }
+
+    if (
+      effectiveProvider === "anthropic" &&
+      ["claude-haiku-5-5", "claude-haiku-5.5"].some((family) =>
+        modelMatchesFamily(config.model, family),
+      )
+    ) {
+      let invalidThinking = false;
+      if (key === "thinking") {
+        try {
+          const setting = JSON.parse(value);
+          invalidThinking =
+            !setting ||
+            typeof setting !== "object" ||
+            (setting.type !== "adaptive" && setting.type !== "disabled") ||
+            "budget_tokens" in setting ||
+            "budgetTokens" in setting ||
+            (setting.type === "disabled" &&
+              ["xhigh", "max"].includes(
+                config.params.effort ?? config.params.reasoning_effort,
+              ));
+        } catch {
+          invalidThinking = true;
+        }
+      }
+      if (
+        invalidThinking ||
+        (key === "temperature" && Number(value) !== 1) ||
+        (key === "top_p" && Number(value) !== 0.99) ||
+        key === "top_k"
+      ) {
+        issues.push({
+          param: key,
+          value,
+          severity: "error",
+          message:
+            "Claude Haiku 5.5 accepts adaptive thinking, or disabled thinking up to high effort; omit sampling parameters (only temperature=1 or top_p=0.99 are accepted).",
+        });
+        continue;
+      }
     }
 
     if (

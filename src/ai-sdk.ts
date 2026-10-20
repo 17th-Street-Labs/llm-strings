@@ -45,6 +45,7 @@ const PROVIDER_OPTION_KEYS: Record<Provider, ProviderOptionsKey> = {
   together: "together",
   fireworks: "fireworks",
   deepseek: "deepseek",
+  zai: "zai",
   moonshotai: "moonshotai",
   perplexity: "perplexity",
   alibaba: "alibaba",
@@ -172,6 +173,13 @@ function addOpenAiOption(
     "truncation",
     "user",
   ]);
+  if (
+    key === "thinking" &&
+    ["deepseek", "moonshotai", "zai"].includes(target)
+  ) {
+    mergeObjectOption(options, target, "thinking", value);
+    return;
+  }
   if (!mappings[key] && !directKeys.has(key) && key !== "include") return;
   const optionKey = mappings[key] ?? key;
 
@@ -709,6 +717,7 @@ const PROVIDER_OPTION_HANDLERS: Record<
     addOpenAiOption(options, key, value, "fireworks"),
   deepseek: (options, key, value) =>
     addOpenAiOption(options, key, value, "deepseek"),
+  zai: (options, key, value) => addOpenAiOption(options, key, value, "zai"),
   moonshotai: (options, key, value) =>
     addOpenAiOption(options, key, value, "moonshotai"),
   perplexity: (options, key, value) =>

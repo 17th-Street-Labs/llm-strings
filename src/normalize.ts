@@ -158,6 +158,23 @@ export function normalize(
       }
     }
 
+    // Kimi's native API uses max_completion_tokens; gateways accept max_tokens.
+    if (
+      provider === "moonshotai" &&
+      modelMatchesFamily(config.model, "kimi-k3") &&
+      key === "max_tokens"
+    ) {
+      if (options.verbose) {
+        changes.push({
+          from: key,
+          to: "max_completion_tokens",
+          value,
+          reason: "Kimi K3 uses max_completion_tokens instead of max_tokens",
+        });
+      }
+      key = "max_completion_tokens";
+    }
+
     // Step 4: OpenAI reasoning model adjustments (direct or via gateway)
     if (
       provider &&

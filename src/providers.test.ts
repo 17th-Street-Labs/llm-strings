@@ -36,6 +36,7 @@ const ALL_PROVIDERS: Provider[] = [
   "together",
   "fireworks",
   "deepseek",
+  "zai",
   "moonshotai",
   "perplexity",
   "alibaba",
@@ -291,7 +292,13 @@ describe("detectGatewaySubProvider", () => {
 
   it("returns undefined for unknown sub-providers", () => {
     expect(detectGatewaySubProvider("qwen/qwen2.5-pro")).toBeUndefined();
-    expect(detectGatewaySubProvider("deepseek/deepseek-v3")).toBeUndefined();
+    expect(detectGatewaySubProvider("deepseek/deepseek-v4.1-flash-1017")).toBe(
+      "deepseek",
+    );
+    expect(detectGatewaySubProvider("moonshotai/kimi-k3")).toBe("moonshotai");
+    expect(detectGatewaySubProvider("mistralai/mistral-large-4-0")).toBe(
+      "mistral",
+    );
   });
 
   it("returns undefined for models without a slash", () => {

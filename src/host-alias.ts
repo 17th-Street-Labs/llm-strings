@@ -25,6 +25,7 @@ export const HOST_ALIASES = {
   fireworks: "api.fireworks.ai",
   fireworksai: "api.fireworks.ai",
   deepseek: "api.deepseek.com",
+  zai: "api.z.ai",
   moonshotai: "api.moonshot.ai",
   moonshot: "api.moonshot.ai",
   perplexity: "api.perplexity.ai",

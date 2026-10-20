@@ -9,6 +9,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 - Meta Model API provider support (`meta`, `api.meta.ai`) for Muse Spark 1.1 using OpenAI-compatible parameter normalization and AI SDK provider options.
 
+## [1.10.0] — 2026-10-20
+
+### Added
+- Z.ai provider (`zai`, `api.z.ai`) with GLM-5.3 reasoning validation and AI SDK options.
+- Gemini 4 Argon and Claude Haiku 5.5 parameter validation, including Haiku's distinct thinking and sampling rules.
+- DeepSeek and Moonshot thinking configuration in strict validation and AI SDK options.
+- Verified October frontier model routes in regression tests and playground suggestions.
+
+### Fixed
+- Accept OpenAI's `ultrafast` service tier.
+- Normalize Kimi K3 native token limits to `max_completion_tokens` and validate its reasoning and fixed sampling options.
+- Detect DeepSeek, Moonshot, Z.ai, and OpenRouter's `mistralai` gateway prefixes.
+
 ## [1.4.0] — 2026-07-02
 
 ### Added

@@ -18,6 +18,7 @@ export type Provider =
   | "together"
   | "fireworks"
   | "deepseek"
+  | "zai"
   | "moonshotai"
   | "perplexity"
   | "alibaba"
@@ -104,6 +105,7 @@ export const HOST_ALIASES: Record<HostAlias, string> = {
   "black-forest-labs": "api.bfl.ai",
   bfl: "api.bfl.ai",
   deepseek: "api.deepseek.com",
+  zai: "api.z.ai",
   moonshotai: "api.moonshot.ai",
   moonshot: "api.moonshot.ai",
   perplexity: "api.perplexity.ai",
@@ -302,6 +304,7 @@ export function detectProvider(host: string): Provider | undefined {
   if (hostMatches(host, "together", "together.xyz")) return "together";
   if (hostMatches(host, "fireworks", "fireworks.ai")) return "fireworks";
   if (hostMatches(host, "deepseek", "deepseek.com")) return "deepseek";
+  if (hostMatches(host, "zai", "z.ai")) return "zai";
   if (hostMatches(host, "moonshot", "moonshot.ai")) return "moonshotai";
   if (hostMatches(host, "perplexity", "perplexity.ai")) return "perplexity";
   if (
@@ -788,6 +791,18 @@ const LUMA_DEF = {
   },
 };
 
+const THINKING_COMPATIBLE_DEF = {
+  ...OPENAI_COMPATIBLE_DEF,
+  params: { ...OPENAI_COMPATIBLE_DEF.params, thinking: "thinking" },
+  specs: {
+    ...OPENAI_COMPATIBLE_DEF.specs,
+    thinking: {
+      type: "json" as const,
+      description: "Thinking mode configuration",
+    },
+  },
+};
+
 const GOOGLE_COMPATIBLE_DEF = {
   params: {
     temperature: "temperature",
@@ -1093,7 +1108,7 @@ export const PROVIDER_DEFINITIONS: Record<Provider, ProviderDefinition> = {
       user: { type: "string", description: "End-user identifier" },
       service_tier: {
         type: "string",
-        values: ["auto", "default", "flex", "priority"],
+        values: ["auto", "default", "flex", "priority", "ultrafast"],
         description: "Processing service tier",
       },
       verbosity: {
@@ -1452,8 +1467,9 @@ export const PROVIDER_DEFINITIONS: Record<Provider, ProviderDefinition> = {
   "black-forest-labs": { params: {}, specs: {} },
   together: OPENAI_COMPATIBLE_DEF,
   fireworks: OPENAI_COMPATIBLE_DEF,
-  deepseek: OPENAI_COMPATIBLE_DEF,
-  moonshotai: OPENAI_COMPATIBLE_DEF,
+  deepseek: THINKING_COMPATIBLE_DEF,
+  zai: THINKING_COMPATIBLE_DEF,
+  moonshotai: THINKING_COMPATIBLE_DEF,
   perplexity: OPENAI_COMPATIBLE_DEF,
   alibaba: OPENAI_COMPATIBLE_DEF,
   cerebras: OPENAI_COMPATIBLE_DEF,
@@ -1555,7 +1571,7 @@ export function isGatewayProvider(provider: Provider): boolean {
 /**
  * Extract the underlying provider from a gateway model string.
  * e.g. "anthropic/claude-sonnet-4-5" → "anthropic"
- * Returns undefined for unknown prefixes (qwen, deepseek, etc.) or models without "/".
+ * Returns undefined for unknown prefixes (qwen, etc.) or models without "/".
  */
 export function detectGatewaySubProvider(model: string): Provider | undefined {
   const slash = model.indexOf("/");
@@ -1568,6 +1584,11 @@ export function detectGatewaySubProvider(model: string): Provider | undefined {
     vertex: "google",
     "google-vertex": "google",
     mistral: "mistral",
+    mistralai: "mistral",
+    deepseek: "deepseek",
+    zai: "zai",
+    "z-ai": "zai",
+    moonshotai: "moonshotai",
     cohere: "cohere",
     xai: "xai",
     "x-ai": "xai",

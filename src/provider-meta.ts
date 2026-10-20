@@ -96,6 +96,7 @@ export const PROVIDER_META: ProviderMeta[] = [
     host: "api.deepseek.com",
     color: "#4d6bfe",
   },
+  { id: "zai", name: "Z.ai", host: "api.z.ai", color: "#3858f6" },
   {
     id: "moonshotai",
     name: "Moonshot AI",

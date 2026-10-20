@@ -40,6 +40,11 @@ it before you spend tokens, and build UI controls from the same metadata.
 Based on the [LLM Connection Strings](https://danlevy.net/llm-connection-strings/)
 proposal by Dan Levy. See the [draft IETF RFC for `llm://`](https://datatracker.ietf.org/doc/html/draft-levy-llm-uri-scheme-00).
 
+Current frontier models include GPT-6.1 Sol, Claude Haiku 5.5, Gemini 4 Argon,
+DeepSeek Flash, Kimi K3, GLM-5.3 (`zai`), and Mistral Large 4. Model IDs pass
+through without an allowlist. See the [October 20 model support audit](docs/model-support-2026-10-20.md)
+for verified native and gateway IDs, parameter rules, and official sources.
+
 ## Why developers use it
 
 - **One config string** for host, model, credentials, and generation params.
@@ -393,7 +398,7 @@ available for detection, metadata, aliases, and flexible AI SDK providerOptions.
 | Category                    | Providers                                                                                                                                                                                                                     |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Core chat + reasoning       | OpenAI, Azure OpenAI, Anthropic, Google AI Studio, Google Vertex AI, Mistral, Cohere, AWS Bedrock, OpenRouter, Vercel AI Gateway                                                                                              |
-| OpenAI-compatible APIs      | xAI, Meta, Groq, DeepInfra, Together.ai, Fireworks, DeepSeek, Moonshot AI, Perplexity, Alibaba DashScope, Cerebras, Baseten, Hugging Face                                                                                     |
+| OpenAI-compatible APIs      | xAI, Meta, Groq, DeepInfra, Together.ai, Fireworks, DeepSeek, Z.ai, Moonshot AI, Perplexity, Alibaba DashScope, Cerebras, Baseten, Hugging Face                                                                               |
 | Media, audio, and flexible  | Fal, Black Forest Labs, Replicate, Prodia, Luma, ByteDance, Kling AI, ElevenLabs, AssemblyAI, Deepgram, Gladia, LMNT, Hume, Rev.ai                                                                                            |
 | Extra aliases and endpoints | `aistudio`, `vertex`, `grok`, `bfl`, `dashscope`, `alibabacloud`, `togetherai`, `fireworksai`, `moonshot`, `wandb`, `weightsandbiases`, `baidu`, `qianfan`, `venice`, `parasail`, `novita`, `atlascloud`, `xiaomi`, `minimax` |
 
@@ -420,6 +425,7 @@ available for detection, metadata, aliases, and flexible AI SDK providerOptions.
 | `together`          | `api.together.xyz`                        | OpenAI-compatible |
 | `fireworks`         | `api.fireworks.ai`                        | OpenAI-compatible |
 | `deepseek`          | `api.deepseek.com`                        | OpenAI-compatible |
+| `zai`               | `api.z.ai`                                | OpenAI-compatible |
 | `moonshotai`        | `api.moonshot.ai`                         | OpenAI-compatible |
 | `perplexity`        | `api.perplexity.ai`                       | OpenAI-compatible |
 | `alibaba`           | `dashscope-intl.aliyuncs.com`             | OpenAI-compatible |
