@@ -23,10 +23,10 @@
 ![The parts of an LLM connection string](./assets/inline-url-diagram-dark.svg)
 
 ```css
-llm://openai/gpt-6-astra?effort=medium&maxTokens=2000
-llm://anthropic/claude-opus-5?cache=5m&effort=max
-llm://bedrock/anthropic.claude-sonnet-5?cache=1h&max=4096
-llm://openrouter/anthropic/claude-sonnet-5?cache=true&max=2000
+llm://openai/gpt-6.1-sol?effort=medium&maxTokens=2000
+llm://anthropic/claude-opus-5-5?cache=5m&effort=max
+llm://bedrock/anthropic.claude-sonnet-5-5?cache=1h&max=4096
+llm://openrouter/anthropic/claude-sonnet-5-5?cache=true&max=2000
 ```
 
 Every LLM provider invented slightly different names for the same knobs:
@@ -86,14 +86,14 @@ import { build, parse } from "llm-strings";
 import { normalize } from "llm-strings/normalize";
 import { validate } from "llm-strings/validate";
 
-const input = "llm://anthropic/claude-sonnet-5?cache=5m&max=4096";
+const input = "llm://anthropic/claude-sonnet-5-5?cache=5m&max=4096";
 
 const parsed = parse(input);
 // {
-//   raw: "llm://anthropic/claude-sonnet-5?cache=5m&max=4096",
+//   raw: "llm://anthropic/claude-sonnet-5-5?cache=5m&max=4096",
 //   host: "api.anthropic.com",
 //   hostAlias: "anthropic",
-//   model: "claude-sonnet-5",
+//   model: "claude-sonnet-5-5",
 //   params: { cache: "5m", max: "4096" }
 // }
 
@@ -101,10 +101,10 @@ const { config, provider } = normalize(parsed);
 // {
 //   provider: "anthropic",
 //   config: {
-//     raw: "llm://anthropic/claude-sonnet-5?cache=5m&max=4096",
+//     raw: "llm://anthropic/claude-sonnet-5-5?cache=5m&max=4096",
 //     host: "api.anthropic.com",
 //     hostAlias: "anthropic",
-//     model: "claude-sonnet-5",
+//     model: "claude-sonnet-5-5",
 //     params: {
 //       cache_control: "ephemeral",
 //       cache_ttl: "5m",
@@ -113,7 +113,7 @@ const { config, provider } = normalize(parsed);
 //   }
 // }
 
-const issues = validate("llm://anthropic/claude-sonnet-5?cache=2h");
+const issues = validate("llm://anthropic/claude-sonnet-5-5?cache=2h");
 // [
 //   {
 //     param: "cache_ttl",
@@ -125,10 +125,10 @@ const issues = validate("llm://anthropic/claude-sonnet-5?cache=2h");
 
 const url = build({
   host: "anthropic",
-  model: "claude-sonnet-5",
+  model: "claude-sonnet-5-5",
   params: { cache: "1h", max: "4096" },
 });
-// "llm://api.anthropic.com/claude-sonnet-5?cache=1h&max=4096"
+// "llm://api.anthropic.com/claude-sonnet-5-5?cache=1h&max=4096"
 ```
 
 ## Format
@@ -142,7 +142,7 @@ llm://[label[:apiKey]@]host/model[?params]
 | `label`  | No       | App name or environment label     | `worker`                   |
 | `apiKey` | No       | API key in the password position  | `sk-proj-abc123`           |
 | `host`   | Yes      | Provider host or short alias      | `api.openai.com`, `openai` |
-| `model`  | Yes      | Model name, route, or provider ID | `gpt-6-astra`              |
+| `model`  | Yes      | Model name, route, or provider ID | `gpt-6.1-sol`              |
 | `params` | No       | Query-string generation settings  | `effort=medium&max=2000`   |
 
 Connection strings can include secrets, so treat values containing `apiKey` like
@@ -153,7 +153,7 @@ credentials: store them in secret managers or env vars, and avoid logging them.
 ### One env var for your model config
 
 ```bash
-LLM_URL="llm://${APP_NAME-:llm-app}:${API_KEY-:sk-proj-abc123}@anthropic/claude-sonnet-5?cache=5m&max=4096"
+LLM_URL="llm://${APP_NAME-:llm-app}:${API_KEY-:sk-proj-abc123}@anthropic/claude-sonnet-5-5?cache=5m&max=4096"
 ```
 
 ```ts
@@ -191,7 +191,7 @@ The AI SDK adapter is designed to help you map provider-specific options to the 
 const { createAiSdkProviderOptions } = await import("llm-strings/ai-sdk");
 
 const { providerOptions } = createAiSdkProviderOptions(
-  "llm://anthropic/claude-sonnet-5?cache=1h&effort=max",
+  "llm://anthropic/claude-sonnet-5-5?cache=1h&effort=max",
 );
 
 // {
@@ -203,7 +203,7 @@ const { providerOptions } = createAiSdkProviderOptions(
 
 // AI SDK call with providerOptions looks like this:
 generateText({
-  model: "claude-sonnet-5",
+  model: "claude-sonnet-5-5",
   // Use our providerOptions here
   providerOptions,
   messages: [{ role: "user", content: "Hello!" }],
@@ -220,16 +220,16 @@ including options such as `order`, `sort=ttft`, and `caching=auto`.
 
 ```bash
 # OpenAI
-LLM_URL="llm://openai/gpt-6-astra?max=2000&effort=medium"
+LLM_URL="llm://openai/gpt-6.1-sol?max=2000&effort=medium"
 
 # Anthropic
-LLM_URL="llm://anthropic/claude-sonnet-5?cache=5m&max=2000"
+LLM_URL="llm://anthropic/claude-sonnet-5-5?cache=5m&max=2000"
 
 # Google
-LLM_URL="llm://google/gemini-3.8-flash?cache=5m&max=2000"
+LLM_URL="llm://google/gemini-4-argon?cache=5m&max=2000"
 
 # Bedrock
-LLM_URL="llm://bedrock/us.anthropic.claude-sonnet-5?cache=1h&max=2000"
+LLM_URL="llm://bedrock/us.anthropic.claude-sonnet-5-5?cache=1h&max=2000"
 ```
 
 ```ts
@@ -237,9 +237,9 @@ import { parse } from "llm-strings";
 import { normalize } from "llm-strings/normalize";
 
 for (const value of [
-  "llm://openai/gpt-6-astra?max=2000&effort=medium",
-  "llm://anthropic/claude-sonnet-5?cache=5m&max=2000",
-  "llm://google/gemini-3.8-flash?cache=5m&max=2000",
+  "llm://openai/gpt-6.1-sol?max=2000&effort=medium",
+  "llm://anthropic/claude-sonnet-5-5?cache=5m&max=2000",
+  "llm://google/gemini-4-argon?cache=5m&max=2000",
 ]) {
   const { config, provider } = normalize(parse(value));
   console.log(provider, config.params);
@@ -289,10 +289,10 @@ include a scheme or path; only the host portion is used.
 ```ts
 import { validate } from "llm-strings/validate";
 
-validate("llm://anthropic/claude-sonnet-5?cache=2h");
+validate("llm://anthropic/claude-sonnet-5-5?cache=2h");
 // [{ param: "cache_ttl", message: "\"cache_ttl\" must be one of [5m, 1h], got \"2h\".", ... }]
 
-validate("llm://anthropic/claude-sonnet-5?cache=5m&max=2000");
+validate("llm://anthropic/claude-sonnet-5-5?cache=5m&max=2000");
 // [] — cache=5m normalizes to cache_control=ephemeral and cache_ttl=5m
 
 validate("llm://fal/fal-ai/nano-banana-2?future_model_param=1");
@@ -318,7 +318,7 @@ import { parse } from "llm-strings";
 import { normalize } from "llm-strings/normalize";
 
 const { changes } = normalize(
-  parse("llm://bedrock/anthropic.claude-sonnet-5?cache=1h&max=4096"),
+  parse("llm://bedrock/anthropic.claude-sonnet-5-5?cache=1h&max=4096"),
   { verbose: true },
 );
 
@@ -375,8 +375,8 @@ are deliberately split into opt-in paths:
 import { parse } from "llm-strings";
 import { safeParse } from "llm-strings/safe";
 
-const raw = parse("llm://openai/gpt-6-astra?effort=high");
-const checked = safeParse("llm://openai/gpt-6-astra?effort=high");
+const raw = parse("llm://openai/gpt-6.1-sol?effort=high");
+const checked = safeParse("llm://openai/gpt-6.1-sol?effort=high");
 
 if (checked.success) {
   checked.config; // provider-normalized settings
@@ -470,15 +470,15 @@ them to provider-native names.
 import { parse } from "llm-strings";
 import { normalize } from "llm-strings/normalize";
 
-normalize(parse("llm://anthropic/claude-sonnet-5?max=4096&cache=true")).config
+normalize(parse("llm://anthropic/claude-sonnet-5-5?max=4096&cache=true")).config
   .params;
 // { max_tokens: "4096", cache_control: "ephemeral" }
 
-normalize(parse("llm://anthropic/claude-sonnet-5?max=4096&cache=5m")).config
+normalize(parse("llm://anthropic/claude-sonnet-5-5?max=4096&cache=5m")).config
   .params;
 // { max_tokens: "4096", cache_control: "ephemeral", cache_ttl: "5m" }
 
-normalize(parse("llm://bedrock/anthropic.claude-sonnet-5?cache=1h")).config
+normalize(parse("llm://bedrock/anthropic.claude-sonnet-5-5?cache=1h")).config
   .params;
 // { cache_control: "ephemeral", cache_ttl: "1h" }
 ```
